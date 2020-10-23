@@ -1,0 +1,74 @@
+import org.apache.spark.sql.SparkSession
+val spark = SparkSession.builder().getOrCreate()
+val df = spark.read.option("header", "true").option("inferSchema","true")csv("C:/Users/DELL/Desktop/Unidad#1/funciones DataFrames-tiendita/tiendita_productos.csv")
+
+df.printSchema() 
+
+import spark.implicits._
+
+//#1 Average in a data set (price)
+df.select(avg("price")).show()
+
+//#2 perform the sum over a data set
+df.select(sum("price")).show()
+
+//#3 identify the minimum value on a data set
+df.select(min("price"),max ("price")).show()
+
+//#4 Identify the maximum value in a data set
+df.select(max("price")).show()
+
+//#5 Shows an example that calculates the mean and maximum value of the subset of data grouped by last name
+df.groupBy(df.col("amount")).agg(avg("price"), max("price")).show()
+
+//#6 Shows an example that calculates the correlation over a data set
+df.stat.corr("amount", "price")
+
+//#7 Example that calculates covariance in a data set
+df.stat.cov("amount", "price")
+
+//#8 Show all Data Frame
+df.show()
+
+//#9 Show the names of the DataFrame columns
+df.columns
+
+//#10 Existing columns and information about them
+df.printSchema()
+
+//#11 select two specific columns
+ df.select("amount","price").show()
+
+ //#12 condition when price is less than 25 return boolean
+val preciosmenor = df.select($"price" < 25)
+
+// # 13 add a new column
+val df2 = df.withColumn ("price*2", df ("price") * 2)
+df2.show
+
+// # 14 how many have the same price
+df.groupBy ("price"). count (). show ()
+
+// # 15 Show what type of data the Dataframe has
+df2.printSchema ()
+
+name,price,amount
+leche jersey,56.00,15
+leche_cho jersey,18,12
+crema lidza,12,20
+mantequilla lala,8,8
+cerveza tecate_roja,35,25
+cerveza tecate_azul,35,25
+cocacola_litro,28,15
+cocacola_medio_litro,10,35
+cocacola_lata,8,35
+manzanas,12,49
+papa,15,35
+platano,12,46
+cebolla,10,48
+sopa_fideos,5,20
+sopa_letritas,5,20
+sopa_coditos,5,20
+pure_tomate,8,18
+salsa_valentina,13,15
+mayonesa,11,12

@@ -1,10 +1,10 @@
-//Ejercicio 1 Calcular el area de un circulo
+//Exercise 1 Calculate the area of a circle
 
 var pi=3.1416
 var p=14.2563
 var radio=(p/(2*pi))
 
-//E jercicio 2 Numeros Primos
+//Exercise 2 Prime Numbers
 
 def isPrime2(i :Int) : Boolean = {
 |     if (i <= 1)
@@ -17,22 +17,22 @@ def isPrime2(i :Int) : Boolean = {
 // isPrime2: (i: Int)Boolean
 (1 to 10).foreach(i => if (isPrime2(i)) println("%d is prime.".format(i)))
 
-//Ejercicio 3 "tweet"
+//Exercise 3 "tweet"
 
 var bird = "tweet"
 string conexion "Estoy escribiendo un Twwet"
 println("Estoy escribiendo un %s",bird)
 
-// Ejercicio 4 "Hola Luke yo soy tu padre"
+// Excersise 4 "Hola Luke yo soy tu padre"
 
 var mensaje = "Hola Luke yo soy tu padre!"
 mensaje.slice(5,9)
 
-// Ejercicio 5 ¿Cual es la diferencia entre value y una variable scala?
+// Exercise 5 ¿Cual es la diferencia entre value y una variable scala?
 
 //value (val) se le asigna un valor definido y no puede ser cambiado en cambio una variable (var) puede ser cambiada en cualquier moment
 
-// Ejercicio 6 Tuplas
+// Exercise 6 Tuplas
 
 var x = (2,4,5,1,2,3,3.1416,23)
 

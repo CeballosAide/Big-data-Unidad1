@@ -30,7 +30,7 @@ mensaje.slice(5,9)
 
 // Exercise 5 What is the difference between value and a scala variable?
 
-//value (val) se le asigna un valor definido y no puede ser cambiado en cambio una variable (var) puede ser cambiada en cualquier moment
+//value (val) is assigned a defined value and cannot be changed instead a variable (var) can be changed at any time
 
 // Exercise 6 Tuplas
 

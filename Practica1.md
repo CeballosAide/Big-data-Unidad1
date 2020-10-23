@@ -28,7 +28,7 @@ println("Estoy escribiendo un %s",bird)
 var mensaje = "Hola Luke yo soy tu padre!"
 mensaje.slice(5,9)
 
-// Exercise 5 ¿Cual es la diferencia entre value y una variable scala?
+// Exercise 5 What is the difference between value and a scala variable?
 
 //value (val) se le asigna un valor definido y no puede ser cambiado en cambio una variable (var) puede ser cambiada en cualquier moment
 

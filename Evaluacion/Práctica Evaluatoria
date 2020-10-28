@@ -1,0 +1,58 @@
+//1)we import the apache spark session
+import org.apache.spark.sql.SparkSession
+//2)create the spark variable and load the file Netflix_2011_2016.csv
+val spark = SparkSession.builder().getOrCreate()
+val df = spark.read.option("header", "true").option("inferSchema","true")csv("C:/Users/aide0/OneDrive/Escritorio/Practica Evaluatoria/Practica-Evaluatoria/Netflix_2011_2016.csv")
+
+//3)Column names
+df.columns
+
+//4)Scheme
+df.printSchema ()
+
+//5)First 5 columns
+df.take(5)
+
+// 6)Use describe () to learn about the DataFrame.
+df.describe().show
+
+/*7)Create a new dataframe with a new column called "HV Ratio" which is the relationship between the price of the "High" column versus the "Volume" column of
+shares traded for one day. (Hint: It's an operation*/
+val df2 = df.withColumn("HV_Ratio", df("High")/df("Volume"))
+ df2.show
+
+ //8)What day had the highest peak in the "close" column?
+ df.groupBy(dayofmonth(df("date")).alias("Day")).max("High").sort(asc("Day")).show()
+ df.groupBy(dayofweek(df("date")).alias("Day")).max("High").sort(asc("Day")).show()
+
+ /*9)Write in your own words in a comment of your code. What is the meaning of the Close column "Close"?*/
+
+//(Marco)close on the netflix stock exchange from 2011 to 2016, is the total value of the shares with which it closed that day.
+//(Aide) The close column refers to the comparison of what was the value with which the Netflix shares closed.
+
+//10)What is the maximum and minimum of the “Volume” column?
+df.select(max("Volume"),min("Volume")).show()
+
+/*11)With Syntax Scala / Spark $ answer the following:
+◦ Hint: Basically very similar to the dates session, you will have to create another
+dataframe to answer some of the items.*/
+
+val df3 = df.withColumn("Resultados ejer_11", df("High")/df("Volume")/df("Close"))
+ df3.show
+
+ //11a)a. How many days was the “Close” column less than $ 600?
+val  preciomenor = df3.filter($"Close" < 600).count
+
+//11b. What percentage of the time was the "High" column greater than $ 500?
+
+val tiempo = df3.filter($"High" > 500).count()
+val tiempo1 = tiempo * .100
+
+//11c.What is the Pearson correlation between column "High" and column "Volume"?
+df3.select(corr("High", "Volume").alias("correlacion")).show()
+
+//11d.What is the maximum in the “High” column per year?
+df3.groupBy(year(df("Date")).alias("Year")).max("High").sort(asc("Year")).show()
+
+//11e.What is the “Close” column average for each calendar month?
+df3.groupBy(month(df("Date")).alias("Month")).avg("Close").sort(asc("Month")).show()

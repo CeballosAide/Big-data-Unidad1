@@ -1,0 +1,74 @@
+//We import recessed libraries including Mllib Machine Learning libraries
+import org.apache.spark.sql.types.IntegerType
+import org.apache.spark.ml.evaluation.MulticlassClassificationEvaluator
+import org.apache.spark.ml.classification.MultilayerPerceptronClassifier
+import org.apache.spark.sql.SparkSession
+import org.apache.spark.ml.feature.StringIndexer 
+import org.apache.spark.ml.feature.VectorAssembler
+
+
+//we created the spark session
+val spark = SparkSession.builder.appName("MultilayerPerceptronClassifierExample").getOrCreate()
+
+
+//1 We load into a dataframe Iris.csv
+val df = spark.read.option("header", "true").option("inferSchema","true")csv("C:/Users/aide0/OneDrive/Escritorio/Practica-Evaluatoria-Unidad2/iris.csv")
+
+df.columns //2 What are the column names?
+df.printSchema() //3 How is the scheme?
+df.head(5) // 4 Print the first 5 columns.
+df.describe().show() //5 Use the describe () method to learn more about the data in the DataFrame.
+
+
+//6 Make the relevant transformation for the categorical data which will be our labels to be classified.
+val labelIndexer = new StringIndexer().setInputCol("species").setOutputCol("indexedLabel").fit(df)
+val indexed = labelIndexer.transform(df).drop("species").withColumnRenamed("indexedLabel", "label")
+indexed.describe().show()
+
+///////////////////////////////Preparing the data for the model///////////////////////////////////
+
+//we vectorize "sepal length", "sepal width", "petal length", "column petal width features"
+val assembler = new VectorAssembler().setInputCols(Array("sepal_length","sepal_width","petal_length","petal_width")).setOutputCol("features")
+val  features = assembler.transform(indexed)
+
+/*We index the tags, add the metadata to the tag column.
+and it fits the entire dataset to include all labels in the index*/
+val labelIndexer = new StringIndexer().setInputCol("label").setOutputCol("indexedLabel").fit(indexed)
+println(s"Found labels: ${labelIndexer.labels.mkString("[", ", ", "]")}")
+features.show
+
+
+/*we prepare the training and test set and the train with training 70% and test 30% and seed => 12345L*/
+ val splits = features.randomSplit(Array(0.7, 0.3), seed = 1234L)
+ val train = splits(0)
+ val test = splits(1)
+
+
+/* we specify the layers for the neural network
+specifying the layers for the neural network as follows:
+input layer size 4 (characteristics),
+two intermediate layers (i.e. hidden layers)
+size 5 and 4 and the output size 3 (classes).*/
+val layers = Array[Int](4, 5, 4, 3)
+
+//We create the MultilayerPerceptronClassifier trainer and set its parameters
+val trainer = new MultilayerPerceptronClassifier().setLayers(layers).setBlockSize(128).setSeed(1234L).setMaxIter(100)  
+
+//7 Build the classification model and explain its architecture.
+/*We train the multilayer perceptron classification model using the estimator.
+and we retrain the multilayer perceptron classification model using the previous estimator that is, (train)*/
+val model = trainer.fit(train)
+
+//we calculate the precision in the Test set
+val result = model.transform(test)
+
+// we evaluate the prediction
+val predictionAndLabels = result.select("prediction", "label")
+predictionAndLabels.show
+
+//8 Print model results
+val evaluator = new MulticlassClassificationEvaluator().setMetricName("accuracy")
+println(s"Test set accuracy = ${evaluator.evaluate(predictionAndLabels)}")
+
+spark.stop()
+

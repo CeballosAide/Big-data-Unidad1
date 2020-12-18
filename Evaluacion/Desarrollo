@@ -1,0 +1,39 @@
+//1.We import the Spark session
+import org.apache.spark.sql.SparkSession
+//4.-Import the Kmeans library for the clustering algorithm.
+import org.apache.spark.ml.clustering.KMeans
+//7. Import Vector Assembler and Vector
+import org.apache.spark.ml.feature.{VectorAssembler,StringIndexer,VectorIndexer,OneHotEncoder}
+import org.apache.spark.ml.linalg.Vectors
+import org.apache.log4j._
+
+//2.-Minimize Errors
+Logger.getLogger("org").setLevel(Level.ERROR)
+
+//3.-Create an instance of the Spark session
+val spark = SparkSession.builder().getOrCreate()
+
+//5.-Loads the Wholesale Customers Data dataset
+val dataset = spark.read.option("header","true").option("inferSchema","true").csv("C:/Users/aide0/OneDrive/Escritorio/Practica-Evaluatoria-Unidad3/Wholesale customers data.csv")
+
+/*6.-Select the following columns: Fresh, Milk, Grocery, Frozen, Detergents Paper, Delicatessen and call this set feature_data*/
+val feature_data = dataset.select($"Fresh", $"Milk", $"Grocery", $"Frozen", $"Detergents_Paper", $"Delicassen")
+
+/*8. Create a new Vector Assembler object for the feature columns
+as an input set, remembering there is no labels*/
+val assembler = new VectorAssembler().setInputCols(Array("Fresh", "Milk", "Grocery", "Frozen", "Detergents_Paper", "Delicassen")).setOutputCol("feature")
+
+//9. Use the assembler object to transform feature_data
+val traning = assembler.transform(feature_data)
+
+//10.Create a Kmeans model with K = 3
+val kmeans = new KMeans().setK(3).setSeed(1L)
+val model = kmeans.fit(traning)
+
+//11.Evaluate the groups using Within Set Sum of Squared Errors WSSSE and print the centroids.
+val WSSSE = model.computeCost(traning)
+println(s"Within Set Sum of Squared Errors = $WSSSE")
+
+//result
+println("Cluster Centers: ")
+model.clusterCenters.foreach(println)
